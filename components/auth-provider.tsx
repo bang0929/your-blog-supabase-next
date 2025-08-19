@@ -5,6 +5,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation";
 
 type AuthContextType = {
   user: User | null
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
-
+  const router = useRouter()
   useEffect(() => {
     // 初始化时检查用户状态
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", session?.user)
+      // console.log("Auth state changed:", session?.user)
       setUser(session?.user ?? null)
       setLoading(false)
     })
@@ -83,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut()
+    router.push("/login");
   }
 
   return (
