@@ -14,7 +14,7 @@ import { useAuth } from "@/components/auth-provider"
 export default function Nav() {
     const { user, signOut } = useAuth()
     // 添加调试日志
-    console.log("Current user in Nav:", user, user?.user_metadata)
+    // console.log("Current user in Nav:", user, user?.user_metadata)
 
     return (
         <nav className="p-4 md:px-[12rem] fixed top-0 left-0 w-full bg-background dark:bg-gray-900 border-b border-border z-50">

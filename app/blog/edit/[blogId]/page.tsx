@@ -2,20 +2,19 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { Toaster, toast } from "sonner"
+import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/components/auth-provider"
 import { getErrorMessage } from '@/lib/utils'
 import { BlogPostForm, BlogPostFormData } from "@/components/article-form"
 import { Loader2 } from "lucide-react"
-import type { Category } from "@/types"
 
 export default function EditBlogPost() {
-  const { slug } = useParams()
+  const { blogId } = useParams()
+  console.log(useParams());
+
   const [post, setPost] = useState<any>(null)
-  const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { user } = useAuth()
   const router = useRouter()
@@ -29,9 +28,9 @@ export default function EditBlogPost() {
 
         // 获取文章数据
         const { data: postData, error: postError } = await supabase
-          .from('posts')
+          .from('article')
           .select('*')
-          .eq('slug', slug)
+          .eq('id', blogId)
           .single()
 
         if (postError) throw postError
@@ -50,15 +49,6 @@ export default function EditBlogPost() {
 
         setPost(postData)
 
-        // 获取分类数据
-        const { data: categoryData, error: categoryError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name', { ascending: true })
-
-        if (categoryError) throw categoryError
-        setCategories(categoryData as Category[])
-
       } catch (error) {
         toast.error("加载失败", {
           description: getErrorMessage(error),
@@ -69,8 +59,8 @@ export default function EditBlogPost() {
       }
     }
 
-    if (user && slug) fetchData()
-  }, [supabase, slug, user, router])
+    if (user && blogId) fetchData()
+  }, [supabase, blogId, user, router])
 
   // 处理表单提交
   const handleSubmit = async (formData: BlogPostFormData) => {
@@ -102,7 +92,7 @@ export default function EditBlogPost() {
       if (error) throw error
 
       toast.success("文章更新成功")
-      router.push(`/posts/${slug}`)
+      router.push(`/blog/${blogId}`)
     } catch (error) {
       toast.error("更新失败", {
         description: getErrorMessage(error),
@@ -133,10 +123,9 @@ export default function EditBlogPost() {
 
   return (
     <div className="container mx-auto pt-20 py-8">
-      <Toaster position="top-right" richColors />
       <BlogPostForm
         initialData={initialFormData}
-        onCancel={() => router.push(`/posts/${slug}`)}
+        onCancel={() => router.push(`/blog/${blogId}`)}
       />
     </div>
   )

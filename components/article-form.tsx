@@ -88,10 +88,10 @@ export function BlogPostForm({
         }
     }
     fetchCategories()
-  }, [supabase, initialData])
+  }, [initialData])
 
   // 处理表单提交
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
         toast.warning("未登录", {
@@ -127,7 +127,6 @@ export function BlogPostForm({
         toast.success("文章更新成功")
 
       } else {
-        // 创建文章
 
         // 生成唯一的slug
         const slug =
@@ -140,18 +139,62 @@ export function BlogPostForm({
             .replace(/-+$/, "") +
           "-" +
           Date.now().toString().slice(-6)
-        console.log('创建文章', {
-          title: title,
-          content: content,
-          excerpt: excerpt || null,
-          author_id: user.id,
-          published: published,
-          slug,
-          is_public: visibility === "public",
-          categories: categories
-        });
-        toast.success("文章创建成功")
+        // 创建文章
+        // console.log('创建文章', {
+        //   title: title,
+        //   content: content,
+        //   excerpt: excerpt || null,
+        //   author_id: user.id,
+        //   published: published,
+        //   slug,
+        //   is_public: visibility === "public",
+        //   categories: selectedCategories
+        // });
+        const {data, error} = await supabase
+          .from("article")
+          .insert([
+            {
+              title: title,
+              content: content,
+              excerpt: excerpt || null,
+              author_id: user.id,
+              published: published,
+              slug,
+              is_public: visibility === "public",
+              categories: selectedCategories
+            }
+          ])
+          .select()
+        if(error) {
+          throw error
+        }
+
+        const articleId = data[0].id
+        if (selectedCategories.length > 0) {
+          const categoryRelations = selectedCategories.map((categoryId) => ({
+            article_id: articleId,
+            category_id: categoryId,
+          }))
+
+          const { error: relationError } = await supabase.from("post_categories").insert(categoryRelations)
+          if (relationError) {
+            throw relationError
+          }
+        }
+        console.log('文章创建成功', data);
+
+        toast.success("文章创建成功", {
+          description: published ? "您的文章已发布" : "您的文章已保存为草稿",
+        })
+        // 重定向到新创建的文章页面或仪表板
+        if (published) {
+          router.push(`/blog/${data[0].slug}`)
+        } else {
+          router.push("/")
+        }
       }
+
+
     } catch (error) {
       toast.warning(initialData ? "更新失败" :  "创建失败", {
         description: getErrorMessage(error),
