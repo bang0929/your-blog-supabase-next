@@ -42,7 +42,7 @@ export function BlogPostForm({
   const [title, setTitle] = useState(initialData?.title || "")
   const [excerpt, setExcerpt] = useState(initialData?.excerpt || "")
   const [content, setContent] = useState(initialData?.content || "")
-  const [published, setPublished] = useState(initialData?.published || false)
+  const [published, setPublished] = useState(true)
   const [visibility, setVisibility] = useState<"private" | "public">(
     initialData?.visibility || "private"
   )
@@ -63,7 +63,7 @@ export function BlogPostForm({
       setTitle(initialData.title)
       setExcerpt(initialData.excerpt)
       setContent(initialData.content)
-      setPublished(initialData.published)
+      // setPublished(initialData.published)
       setVisibility(initialData.visibility)
       setSelectedCategories(initialData.categories)
     }
@@ -88,7 +88,7 @@ export function BlogPostForm({
         }
     }
     fetchCategories()
-  }, [initialData])
+  }, [supabase, initialData])
 
   // 处理表单提交
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,17 +114,56 @@ export function BlogPostForm({
 
       if(initialData) {
         // 编辑文章
-        console.log('编辑文章', initialData.id, {
-          title: title,
-          content: content,
-          excerpt: excerpt || null,
-          author_id: user.id,
-          published: published,
-          is_public: visibility === "public",
-          categories: categories,
-          updated_at: new Date().toISOString()
-        });
+        // console.log('编辑文章', initialData.id, {
+        //   title: title,
+        //   content: content,
+        //   excerpt: excerpt || null,
+        //   author_id: user.id,
+        //   published: published,
+        //   is_public: visibility === "public",
+        //   categories: selectedCategories,
+        //   updated_at: new Date().toISOString()
+        // });
+        // 更新文章
+        const { error } = await supabase
+          .from('article')
+          .update({
+            title: title,
+            content: content,
+            excerpt: excerpt || null,
+            published: published,
+            is_public: visibility === "public",
+            categories: selectedCategories,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', initialData.id)
+
+        if (error) throw error
+
+        // 文章-分类关系表, 清除旧数据
+        const articleId = initialData.id
+        const { error: DelRelationError  } = await supabase
+          .from('article_categories')
+          .delete()
+          .eq('article_id', articleId); // 从前端获取参数
+        if (DelRelationError) {
+            throw DelRelationError
+        }
+
+        // 文章-分类关系表, 插入新数据
+        if (selectedCategories.length > 0) {
+          const categoryRelations = selectedCategories.map((categoryId) => ({
+            article_id: articleId,
+            category_id: categoryId,
+          }))
+
+          const { error: relationError } = await supabase.from("article_categories").insert(categoryRelations)
+          if (relationError) {
+            throw relationError
+          }
+        }
         toast.success("文章更新成功")
+        router.push(`/blog/${initialData.id}`)
 
       } else {
 
@@ -139,17 +178,7 @@ export function BlogPostForm({
             .replace(/-+$/, "") +
           "-" +
           Date.now().toString().slice(-6)
-        // 创建文章
-        // console.log('创建文章', {
-        //   title: title,
-        //   content: content,
-        //   excerpt: excerpt || null,
-        //   author_id: user.id,
-        //   published: published,
-        //   slug,
-        //   is_public: visibility === "public",
-        //   categories: selectedCategories
-        // });
+
         const {data, error} = await supabase
           .from("article")
           .insert([
@@ -169,6 +198,7 @@ export function BlogPostForm({
           throw error
         }
 
+        // 文章-分类关系表 插入新数据
         const articleId = data[0].id
         if (selectedCategories.length > 0) {
           const categoryRelations = selectedCategories.map((categoryId) => ({
@@ -176,10 +206,10 @@ export function BlogPostForm({
             category_id: categoryId,
           }))
 
-          const { error: relationError } = await supabase.from("post_categories").insert(categoryRelations)
-          if (relationError) {
-            throw relationError
-          }
+          await supabase.from("article_categories").insert(categoryRelations)
+          // if (relationError) {
+          //   throw relationError
+          // }
         }
         console.log('文章创建成功', data);
 
@@ -286,7 +316,7 @@ export function BlogPostForm({
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <Checkbox
               id="published"
               checked={published}
@@ -294,7 +324,7 @@ export function BlogPostForm({
               disabled={isSubmitting}
             />
             <Label htmlFor="published">立即发布</Label>
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label>可见性</Label>

@@ -1,18 +1,40 @@
 'use client';
 import {
     Card,
-    CardDescription,
     CardHeader,
-    CardTitle,
+    CardContent,
+    CardFooter
 } from '@/components/ui/card';
+import { Button } from "@/components/ui/button"
 
-export default function CategoriesCard({item}: { item: { id: number; name: string; article_count: number } }) {
+import { formatDate } from "@/lib/utils"
+import type { Post } from "@/types"
+import Link from "next/link"
+interface BlogPostCardProps {
+  item: Post
+}
+
+export default function CategoriesCard({item}: BlogPostCardProps) {
     return (
-        <Card className="w-64 m-4 cursor-pointer hover:shadow-lg transition-shadow">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardHeader>
-                <CardTitle>{item.name}</CardTitle>
-                <CardDescription>{item.article_count}</CardDescription>
+                <div className="text-sm text-muted-foreground mb-1">
+                    {formatDate(item.created_at)} · 作者
+                </div>
+                <Link href={`/blog/${item.slug}`} className="hover:underline">
+                    <h3 className="text-xl font-bold">{item.title}</h3>
+                </Link>
             </CardHeader>
+            <CardContent className="flex-grow">
+                <p className="text-muted-foreground">{item.excerpt || item.content.substring(0, 150) + "..."}</p>
+            </CardContent>
+            {/* <CardFooter>
+                <Link href={`/blog/${item.slug}`} className="w-full">
+                    <Button variant="outline" className="w-full">
+                        阅读全文
+                    </Button>
+                </Link>
+            </CardFooter> */}
         </Card>
     )
 }

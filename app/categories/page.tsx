@@ -11,8 +11,14 @@ import Link from "next/link";
 export default async function Categories() {
     const supabase = await createClient();
 
-    const {data, error} = await supabase.from('categories').select('*');
-    console.log(data, error);
+    const {data, error} = await supabase
+        .from('categories')
+        .select(`
+            id,
+            name,
+            article_categories (article_id)
+        `);
+    // console.log(data, error);
     // 处理错误或空数据情况
     if (error) {
         console.error("Error fetching categories:", error.message);
@@ -23,16 +29,23 @@ export default async function Categories() {
         return <div className="pt-20 flex justify-center">暂无数据</div>;
     }
 
+    const countData = data.map(category => ({
+        id: category.id,
+        name: category.name,
+        article_count: category.article_categories?.length || 0
+    }));
+
+
     return (
-        <div className="pt-20 flex flex-wrap">
+        <div className="pt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {
-                data.map(item => {
+                countData.map(item => {
                     return (
                         <Link key={item.id} href={`/categories/${item.id}`}>
-                            <Card key={item.id} className="w-64 m-4 cursor-pointer hover:shadow-lg transition-shadow">
+                            <Card key={item.id} className=" cursor-pointer hover:shadow-lg transition-shadow">
                                 <CardHeader>
                                     <CardTitle>{item.name}</CardTitle>
-                                    <CardDescription>{item.article_count}</CardDescription>
+                                    <CardDescription>共 {item.article_count} 篇文章</CardDescription>
                                 </CardHeader>
                             </Card>
                         </Link>

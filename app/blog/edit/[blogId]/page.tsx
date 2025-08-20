@@ -73,7 +73,6 @@ export default function EditBlogPost() {
     }
 
     try {
-      setIsSubmitting(true)
 
       // 更新文章
       const { error } = await supabase
@@ -103,6 +102,7 @@ export default function EditBlogPost() {
   }
 
   // 准备初始表单数据
+
   const initialFormData: BlogPostFormData = post ? {
     id: post.id,
     title: post.title,
@@ -110,7 +110,7 @@ export default function EditBlogPost() {
     content: post.content,
     published: post.published,
     visibility: post.is_public ? "public" : "private",
-    categories: post.categories || []
+    categories: JSON.parse(post.categories) || []
   } : undefined
 
   if (isLoading) {
