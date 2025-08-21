@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation"
 
 export interface BlogPostFormData {
   id?: number | string
+  slug: string
   title: string
   excerpt: string
   content: string
@@ -134,7 +135,7 @@ export function BlogPostForm({
             published: published,
             is_public: visibility === "public",
             categories: selectedCategories,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq('id', initialData.id)
 
@@ -163,7 +164,7 @@ export function BlogPostForm({
           }
         }
         toast.success("文章更新成功")
-        router.push(`/blog/${initialData.id}`)
+        router.push(`/blog/${initialData.slug}`)
 
       } else {
 
@@ -187,6 +188,12 @@ export function BlogPostForm({
               content: content,
               excerpt: excerpt || null,
               author_id: user.id,
+              author: {
+                username: user.user_metadata.user_name,
+                avatar_url: user.user_metadata.avatar_url,
+                email: user.user_metadata.email,
+                provider: user.app_metadata.provider,
+              },
               published: published,
               slug,
               is_public: visibility === "public",

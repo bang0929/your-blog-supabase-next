@@ -3,9 +3,9 @@ import {
     Card,
     CardHeader,
     CardContent,
-    CardFooter
+    // CardFooter
 } from '@/components/ui/card';
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 
 import { formatDate } from "@/lib/utils"
 import type { Post } from "@/types"
@@ -19,7 +19,7 @@ export default function CategoriesCard({item}: BlogPostCardProps) {
         <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardHeader>
                 <div className="text-sm text-muted-foreground mb-1">
-                    {formatDate(item.created_at)} · 作者
+                    {formatDate(item.created_at)} · {item.author?.username}
                 </div>
                 <Link href={`/blog/${item.slug}`} className="hover:underline">
                     <h3 className="text-xl font-bold">{item.title}</h3>

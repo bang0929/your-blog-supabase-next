@@ -9,7 +9,7 @@ export interface Post {
   is_public: boolean
   created_at: string
   updated_at: string
-  author?: User
+  author?: User | undefined
   categories?: Category[]
 }
 

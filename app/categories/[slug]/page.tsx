@@ -4,6 +4,14 @@ import type { Post, Category } from "@/types"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { notFound } from "next/navigation"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 async function getCategoryBySlug(slug: string | number) {
   const supabase =  await createClient()
@@ -31,25 +39,6 @@ async function getArticlesByCategory(categoryId: string | number) {
       // console.error("Error fetching categories:", error.message);
       return [];
   }
-
-  // 获取作者信息
-  // const authorIds = [...new Set(list.map((post) => post.author_id))]
-  // const { data: profiles, error: profilesError } = await supabase.from("user_profiles").select("*").in("id", authorIds)
-
-  // if (profilesError) {
-  //   console.error("Error fetching user profiles:", profilesError)
-  //   return list as Post[]
-  // }
-
-  // // 合并文章和作者信息
-  // const postsWithAuthors = list.map((post) => {
-  //   const author = profiles?.find((profile) => profile.id === post.author_id)
-  //   return {
-  //     ...post,
-  //     author: author || null,
-  //   }
-  // })
-
   return list as Post[]
 }
 
@@ -69,10 +58,20 @@ export default async function CategoriesBlogList({
 
     return (
       <div className='pt-24 pb-20'>
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold mb-2">{category.name}</h1>
-          {/* {category.description && <p className="text-muted-foreground">{category.description}</p>} */}
-        </div>
+
+        <Breadcrumb className='mb-4'>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/categories">分类列表</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{category.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {

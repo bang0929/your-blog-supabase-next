@@ -62,47 +62,6 @@ export default function EditBlogPost() {
     if (user && blogId) fetchData()
   }, [supabase, blogId, user, router])
 
-  // 处理表单提交
-  const handleSubmit = async (formData: BlogPostFormData) => {
-    if (!user) {
-      toast.warning("未登录", {
-        description: "请先登录后再编辑文章",
-      })
-      router.push('/login')
-      return
-    }
-
-    try {
-
-      // 更新文章
-      const { error } = await supabase
-        .from('article')
-        .update({
-          title: formData.title,
-          content: formData.content,
-          excerpt: formData.excerpt || null,
-          published: formData.published,
-          is_public: formData.visibility === "public",
-          categories: formData.categories,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', formData.id)
-
-      if (error) throw error
-
-      toast.success("文章更新成功")
-      router.push(`/blog/${blogId}`)
-    } catch (error) {
-      toast.error("更新失败", {
-        description: getErrorMessage(error),
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  // 准备初始表单数据
-
   const initialFormData: BlogPostFormData = post ? {
     id: post.id,
     title: post.title,
@@ -110,7 +69,7 @@ export default function EditBlogPost() {
     content: post.content,
     published: post.published,
     visibility: post.is_public ? "public" : "private",
-    categories: JSON.parse(post.categories) || []
+    categories: post.categories || []
   } : undefined
 
   if (isLoading) {
