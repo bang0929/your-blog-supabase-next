@@ -13,6 +13,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    console.log(123123);
 
     // 处理代码块高亮
     const codeBlocks = containerRef.current.querySelectorAll("pre code");

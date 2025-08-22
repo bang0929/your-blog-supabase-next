@@ -114,17 +114,7 @@ export function BlogPostForm({
       setIsSubmitting(true)
 
       if(initialData) {
-        // 编辑文章
-        // console.log('编辑文章', initialData.id, {
-        //   title: title,
-        //   content: content,
-        //   excerpt: excerpt || null,
-        //   author_id: user.id,
-        //   published: published,
-        //   is_public: visibility === "public",
-        //   categories: selectedCategories,
-        //   updated_at: new Date().toISOString()
-        // });
+
         // 更新文章
         const { error } = await supabase
           .from('article')
@@ -291,7 +281,6 @@ export function BlogPostForm({
               onChange={setContent}
               placeholder="开始编写文章内容..."
               disabled={isSubmitting}
-              immediatelyRender={false}
             />
           </div>
 
@@ -352,10 +341,10 @@ export function BlogPostForm({
         </CardContent>
         <CardFooter className="flex justify-end">
           {
-            initialData &&
-            <Button className="mr-8" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-              取消
-            </Button>
+            // initialData &&
+            // <Button className="mr-8" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+            //   取消
+            // </Button>
           }
           {
             initialData ?

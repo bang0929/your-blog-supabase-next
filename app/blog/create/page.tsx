@@ -10,9 +10,9 @@ export default function CreateBlogPost() {
     const router = useRouter()
 
     return (
-    <div className="container mx-auto pt-20 py-8">
+    <div className="container px-4 md:px-48 mx-auto pt-20 py-8">
       <BlogPostForm
-        onCancel={() => router.push('/')}
+        onCancel={() => router.back()}
       />
     </div>
   );

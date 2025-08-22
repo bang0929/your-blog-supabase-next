@@ -57,13 +57,13 @@ export default async function CategoriesBlogList({
     const articles = await getArticlesByCategory(slug)
 
     return (
-      <div className='pt-24 pb-20'>
+      <div className='container px-4 md:px-48 pt-24 pb-20'>
 
         <Breadcrumb className='mb-4'>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/categories">分类列表</Link>
+                <Link href="/categories">分类</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

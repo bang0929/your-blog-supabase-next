@@ -14,7 +14,7 @@ import {
 export default function Home() {
 
   return (
-    <div className={"pt-20 md:pt-24 font-sans min-h-screen gap-16 "}>
+    <div className="container px-4 md:px-48 pt-20 md:pt-24 font-sans min-h-screen gap-16">
       <main className="flex flex-col gap-[32px] row-start-2 sm:items-start">
         <div className="flex gap-4 items-center">
           <Label>排序方式：</Label>

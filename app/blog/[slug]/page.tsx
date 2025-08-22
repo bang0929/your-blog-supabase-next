@@ -1,25 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { createClient } from "@/lib/supabase/client"
-import { formatDate } from "@/lib/utils"
-import DOMPurify from "dompurify";
+import { formatDate, getErrorMessage } from "@/lib/utils"
+// import DOMPurify from "dompurify";
 import { RichTextRenderer } from "@/components/rich-text-renderer";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth-provider"
 import {Post} from '@/types';
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 export default function BlogDetail() {
     const { slug } = useParams();
     const [article, setArticle] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createClient()
+    const router = useRouter()
+    const {user} = useAuth()
+    // 使用useMemo缓存supabase客户端，避免重复创建
+    const supabase = useMemo(() => createClient(), []);
+    // 使用ref跟踪当前请求，避免重复请求
+    const currentRequestSlug = useRef<string | null>(null);
 
-    console.log(slug);
     useEffect(() => {
+      // 如果没有slug或者slug与当前请求相同，则不执行
+      console.log(currentRequestSlug.current, slug, currentRequestSlug.current === slug);
+
+      if (!slug || currentRequestSlug.current === slug) return;
+
+      currentRequestSlug.current = slug as string;
+
       const fetchArticle = async () => {
         try {
           setLoading(true);
@@ -36,27 +56,32 @@ export default function BlogDetail() {
             if (articleError) throw articleError;
             if (!articleData) {
               setError("文章不存在");
+              // 请求失败，重置currentRequestSlug以允许重试
+              currentRequestSlug.current = null;
               return;
             }
             console.log(articleData);
 
             setArticle(articleData);
 
-        } catch (error: any) {
+        } catch (error) {
           console.error("Error fetching article:", error);
-          setError(error.message || "加载文章失败");
+          setError(getErrorMessage(error) || "加载文章失败");
+          // 请求失败，重置currentRequestSlug以允许重试
+          currentRequestSlug.current = null;
         } finally {
           setLoading(false);
         }
       }
       if (slug) {
+        console.log('博客详情',slug);
         fetchArticle();
       }
     },[slug, supabase])
 
     if (loading) {
       return (
-        <div className="container mx-auto pt-20 h-screen">
+        <div className="container px-4 md:px-48 mx-auto pt-20 h-screen">
           <article className="mx-auto bg-white p-8 min-h-full mt-2">
             <div className="mb-8">
               <Skeleton className="h-4 w-24 mb-4" />
@@ -70,14 +95,14 @@ export default function BlogDetail() {
               ))}
             </div>
           </article>
-
         </div>
       );
     }
 
+
     if (error || !article) {
       return (
-        <div className="container mx-auto pt-20 h-screen">
+        <div className="container px-4 md:px-48 mx-auto pt-20 h-screen">
           <article className="mx-auto bg-white p-8 min-h-full mt-2">
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-red-600 mb-4">加载失败</h2>
@@ -95,8 +120,26 @@ export default function BlogDetail() {
     // const cleanHtml = DOMPurify.sanitize(article.content);
 
     return (
-        <div className="container mx-auto pt-20 h-screen">
-            <article className="mx-auto bg-white p-8 min-h-full mt-2">
+        <div className="container px-4 md:px-48 mx-auto pt-20 h-screen">
+            <Breadcrumb className='mb-4'>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/categories">分类</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>博客详情</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <article className="mx-auto bg-white p-8 min-h-full mt-2 relative">
+              {article.author_id === user?.id}<div className="absolute top-0 -right-16">
+                <Button>
+                  <Link href={`/blog/edit/${article.id}`}>编辑</Link>
+                </Button>
+              </div>
               <header className="mb-8">
                 <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
                 <div className="text-muted-foreground">
@@ -113,9 +156,7 @@ export default function BlogDetail() {
                 </div>
               </header>
               <RichTextRenderer content={article.content}/>
-
             </article>
-
         </div>
     )
 }

@@ -34,12 +34,13 @@ export default async function Categories() {
         name: category.name,
         article_count: category.article_categories?.length || 0
     }));
-
+    // 按照 article_count 从大到小排序
+    const sortedData = countData.sort((a, b) => b.article_count - a.article_count);
 
     return (
-        <div className="pt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="container px-4 md:px-48 pt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {
-                countData.map(item => {
+                sortedData.map(item => {
                     return (
                         <Link key={item.id} href={`/categories/${item.id}`}>
                             <Card key={item.id} className=" cursor-pointer hover:shadow-lg transition-shadow">

@@ -43,7 +43,7 @@ export default function RootLayout({
           <AuthProvider>
             <div className="flex flex-col min-h-screen">
               <Nav />
-              <main className="flex-1 px-4 md:px-48 bg-blue-100/50 bg-background dark:bg-neutral-900 pb-8">{children}</main>
+              <main className="flex-1 bg-blue-100/50 bg-background dark:bg-neutral-900 pb-8">{children}</main>
               <footer className="border-t py-6">
                 <div className="container mx-auto px-4 md:px-48 text-center text-sm text-muted-foreground">
                   © {new Date().getFullYear()} Your Blog. All rights reserved.

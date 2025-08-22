@@ -57,7 +57,7 @@ export function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        codeBlock: false,
+        codeBlock: true,
       }),
       Heading.configure({
         levels: [1, 2, 3],
@@ -317,7 +317,7 @@ export function RichTextEditor({
         </div>
       </div>
 
-      <EditorContent editor={editor} className="prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md" />
+      <EditorContent editor={editor} className="max-h-[400px] prose-pre:bg-current prose-pre:p-4 prose-pre:rounded-md" />
     </div>
   )
 }

@@ -9,6 +9,10 @@ import { getErrorMessage } from '@/lib/utils'
 import { BlogPostForm, BlogPostFormData } from "@/components/article-form"
 import { Loader2 } from "lucide-react"
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+
 export default function EditBlogPost() {
   const { blogId } = useParams()
   console.log(useParams());
@@ -60,13 +64,14 @@ export default function EditBlogPost() {
     }
 
     if (user && blogId) fetchData()
-  }, [supabase, blogId, user, router])
+  }, [])
 
   const initialFormData: BlogPostFormData = post ? {
     id: post.id,
     title: post.title,
     excerpt: post.excerpt || "",
     content: post.content,
+    slug: post.slug,
     published: post.published,
     visibility: post.is_public ? "public" : "private",
     categories: post.categories || []
@@ -74,18 +79,26 @@ export default function EditBlogPost() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto pt-20 py-8 flex justify-center">
+      <div className="container px-4 md:px-48 mx-auto pt-20 py-8 flex justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto pt-20 py-8">
-      <BlogPostForm
-        initialData={initialFormData}
-        onCancel={() => router.push(`/blog/${blogId}`)}
-      />
+    <div className="container px-4 md:px-48 mx-auto pt-20 py-8">
+        {/* <Button type="ghost"> */}
+            <Link href={`/blog/${initialFormData.slug}`}
+                className="inline-flex items-center text-muted-foreground hover:text-foreground mb-2">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                返回
+            </Link>
+        {/* </Button> */}
+
+        <BlogPostForm
+            initialData={initialFormData}
+            onCancel={() => router.back()}
+        />
     </div>
   )
 }
