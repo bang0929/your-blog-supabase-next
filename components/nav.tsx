@@ -18,7 +18,7 @@ export default function Nav() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const { user, signOut } = useAuth()
     const pathname = usePathname()
-    console.log(pathname);
+    // console.log(pathname);
 
     // 添加调试日志
     // console.log("Current user in Nav:", user, user?.user_metadata)

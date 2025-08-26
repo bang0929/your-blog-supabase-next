@@ -1,22 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Post, Category } from "@/types"
 
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import BlogListCard from '@/components/blog-list-card';
-import Link from "next/link"
+// import { Label } from "@/components/ui/label";
+// import { Button } from "@/components/ui/button";
+// import BlogListCard from '@/components/blog-list-card';
+// import Link from "next/link"
 import ArticleListClient from '@/components/article-list-client';
-
-// import {
-//     Select,
-//     SelectContent,
-//     SelectGroup,
-//     SelectItem,
-//     SelectLabel,
-//     SelectTrigger,
-//     SelectValue,
-
-//  } from "@/components/ui/select";
 
 async function getArticlesByCategory() {
   const supabase = await createClient()
