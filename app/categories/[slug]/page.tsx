@@ -42,6 +42,16 @@ async function getArticlesByCategory(categoryId: string | number) {
   return list as Post[]
 }
 
+async function getAllCategories() {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("categories").select("*").order('id', { ascending: true })
+  if (error) {
+    console.error("Error fetching categories:", error)
+    return []
+  }
+  return data as Category[]
+}
+
 export default async function CategoriesBlogList({
   params
 }: {
@@ -55,9 +65,13 @@ export default async function CategoriesBlogList({
       notFound()
     }
     const articles = await getArticlesByCategory(slug)
+    let allCategories = [] as Category[]
+    if(articles.length) {
+      allCategories = await getAllCategories()
+    }
 
     return (
-      <div className='container px-4 md:px-48 pt-24 pb-20'>
+      <div className='container mx-auto px-4 md:px-24 pt-24 pb-12'>
 
         <Breadcrumb className='mb-4'>
           <BreadcrumbList>
@@ -73,11 +87,11 @@ export default async function CategoriesBlogList({
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {
             articles.length > 0 ? articles.map(item => {
               return (
-                <BlogListCard key={item.id} item={item}></BlogListCard>
+                <BlogListCard key={item.id} item={item} allCategories={allCategories}></BlogListCard>
               )
             }) :
             (

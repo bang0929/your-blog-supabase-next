@@ -10,7 +10,7 @@ export interface Post {
   created_at: string
   updated_at: string
   author?: User | undefined
-  categories?: Category[]
+  categories?: []
 }
 
 export interface User {

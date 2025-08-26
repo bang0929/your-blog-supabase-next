@@ -38,7 +38,7 @@ export default async function Categories() {
     const sortedData = countData.sort((a, b) => b.article_count - a.article_count);
 
     return (
-        <div className="container px-4 md:px-48 pt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="container mx-auto px-4 md:px-24 pt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {
                 sortedData.map(item => {
                     return (

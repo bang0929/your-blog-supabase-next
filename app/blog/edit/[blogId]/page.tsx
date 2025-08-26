@@ -8,16 +8,14 @@ import { useAuth } from "@/components/auth-provider"
 import { getErrorMessage } from '@/lib/utils'
 import { BlogPostForm, BlogPostFormData } from "@/components/article-form"
 import { Loader2 } from "lucide-react"
-
+import {Post} from '@/types/index'
 import Link from "next/link";
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 
 export default function EditBlogPost() {
   const { blogId } = useParams()
-  console.log(useParams());
-
-  const [post, setPost] = useState<any>(null)
+  const [post, setPost] = useState<Post | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const { user } = useAuth()
@@ -34,7 +32,7 @@ export default function EditBlogPost() {
         const { data: postData, error: postError } = await supabase
           .from('article')
           .select('*')
-          .eq('id', blogId)
+          .eq('slug', blogId)
           .single()
 
         if (postError) throw postError
@@ -50,7 +48,6 @@ export default function EditBlogPost() {
           router.push('/')
           return
         }
-
         setPost(postData)
 
       } catch (error) {
@@ -62,6 +59,7 @@ export default function EditBlogPost() {
         setIsLoading(false)
       }
     }
+    console.log(333, user, blogId);
 
     if (user && blogId) fetchData()
   }, [])
@@ -75,7 +73,16 @@ export default function EditBlogPost() {
     published: post.published,
     visibility: post.is_public ? "public" : "private",
     categories: post.categories || []
-  } : undefined
+  } : {
+    id: '',
+    title: '',
+    excerpt: '',
+    content: '',
+    slug: '',
+    published: false,
+    visibility: 'private',
+    categories: []
+  }
 
   if (isLoading) {
     return (

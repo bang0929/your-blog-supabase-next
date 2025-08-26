@@ -8,9 +8,9 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(dateString: string): string {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+    year: 'numeric', // numeric, 2-digit
+    month: '2-digit', // 2-digit, short, long
+    day: '2-digit' // 2-digit, numeric
   }).format(date)
 }
 

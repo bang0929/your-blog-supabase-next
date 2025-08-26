@@ -77,7 +77,7 @@ export default function BlogDetail() {
         console.log('博客详情',slug);
         fetchArticle();
       }
-    },[slug, supabase])
+    },[slug, supabase, router])
 
     if (loading) {
       return (
@@ -120,7 +120,7 @@ export default function BlogDetail() {
     // const cleanHtml = DOMPurify.sanitize(article.content);
 
     return (
-        <div className="container px-4 md:px-48 mx-auto pt-20 h-screen">
+        <div className="container mx-auto px-4 md:px-24 pt-24 pb-12">
             <Breadcrumb className='mb-4'>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -134,10 +134,10 @@ export default function BlogDetail() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <article className="mx-auto bg-white p-8 min-h-full mt-2 relative">
-              {article.author_id === user?.id}<div className="absolute top-0 -right-16">
-                <Button>
-                  <Link href={`/blog/edit/${article.id}`}>编辑</Link>
+            <article className="mx-auto bg-white p-8 pt-12 min-h-full mt-2 relative">
+              {article.author_id === user?.id}<div className="absolute top-2 right-4">
+                <Button className="">
+                  <Link href={`/blog/edit/${article.slug}`}>编辑</Link>
                 </Button>
               </div>
               <header className="mb-8">

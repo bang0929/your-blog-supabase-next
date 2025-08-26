@@ -114,6 +114,7 @@ export function BlogPostForm({
       setIsSubmitting(true)
 
       if(initialData) {
+        console.log('更新文章', title);
 
         // 更新文章
         const { error } = await supabase

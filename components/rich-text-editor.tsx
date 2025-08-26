@@ -317,7 +317,7 @@ export function RichTextEditor({
         </div>
       </div>
 
-      <EditorContent editor={editor} className="max-h-[400px] prose-pre:bg-current prose-pre:p-4 prose-pre:rounded-md" />
+      <EditorContent editor={editor} className="max-h-[400px] overflow-auto prose-pre:bg-current prose-pre:p-4 prose-pre:rounded-md" />
     </div>
   )
 }
